@@ -1,0 +1,45 @@
+name: GPU / benchmark report
+description: Share a reproducible NVIDIA compatibility result, numerical mismatch or timing observation.
+title: "[GPU report] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing DraftScope. Include failed runs as well as successes.
+        Share public test inputs and sanitized logs only; omit credentials, personal data and model weights.
+  - type: input
+    id: version
+    attributes:
+      label: DraftScope commit or release
+      placeholder: Commit SHA or release tag
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Hardware and software
+      description: GPU name / VRAM / compute capability, OS, driver, CUDA, PyTorch and backend versions. Include sanitized doctor output if available.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction command and inputs
+      description: Exact CLI command, model revision, public prompts or a minimal reproducer, and expected versus actual behavior.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result and measurement scope
+      description: Completion status, experimental activation status, repetitions, head/decode/request timing and any token mismatches. For failures, include the sanitized error.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Reporting scope
+      options:
+        - label: I distinguish measured device results from capability checks and CPU tests.
+          required: true

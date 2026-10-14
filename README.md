@@ -1,10 +1,29 @@
 # DraftScope
 
+[![CPU checks](https://github.com/6bjjjj/draftscope/actions/workflows/ci.yml/badge.svg)](https://github.com/6bjjjj/draftscope/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Status: research preview](https://img.shields.io/badge/status-research_preview-orange.svg)](docs/validation.md)
+
 Prefix-aware target-head verification and reproducible NVIDIA inference experiments.
 
 DraftScope combines a Transformers baseline, a pinned vLLM INT4 + DFlash2 preset, and an optional experimental head that makes dense-fallback decisions using the verification prefix that affects greedy token acceptance.
 
 **Alpha research software.** Historical GPU measurements and the validation status of the installable package are reported separately below. [العربية](README.ar.md)
+
+[Download the research preview](https://github.com/6bjjjj/draftscope/releases) · [Compare the mechanisms](docs/related-work.md) · [Contribute a reproducible report](CONTRIBUTING.md)
+
+## Try it without a GPU
+
+```sh
+git clone https://github.com/6bjjjj/draftscope.git
+cd draftscope
+python -m venv .venv
+# Activate the virtual environment for your shell.
+python -m pip install .
+draftscope plan
+```
+
+This prints the default experiment plan without downloading models or allocating GPU memory. For a GPU experiment, follow the backend-specific installation instructions below. NVIDIA compatibility reports and independent numerical reviews are welcome through [issues](https://github.com/6bjjjj/draftscope/issues).
 
 ## Features
 
