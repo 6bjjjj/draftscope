@@ -1,8 +1,26 @@
 # DraftScope
 
-NVIDIA inference experiments with explicit hardware checks, bounded runs and auditable results.
+Prefix-aware target-head verification and reproducible NVIDIA inference experiments.
 
-**Alpha research software.** DraftScope packages a Transformers baseline, a pinned vLLM INT4 + DFlash2 preset, and an optional experimental prefix-verification head. It does not claim a new speculative-decoding algorithm, universal speedups, or 500 tokens/second.
+DraftScope combines a Transformers baseline, a pinned vLLM INT4 + DFlash2 preset, and an optional experimental head that makes dense-fallback decisions using the verification prefix that affects greedy token acceptance.
+
+**Alpha research software.** Historical GPU measurements and the validation status of the installable package are reported separately below. [العربية](README.ar.md)
+
+## Features
+
+| Feature | Practical purpose |
+|---|---|
+| Prefix-conditioned dense fallback | Numerical uncertainty in a later, unused verification row need not force a full dense-head fallback. The target forward pass and coarse/refinement stages still run for all verification rows. |
+| Head extension without additional training | Uses a Marlin W8A16 coarse head, top-64 candidate refinement and conservative score bounds. Retains the dense BF16 head for fallback; adds memory. The DFlash2 drafter itself is a pretrained checkpoint. |
+| Device-side branch selection | Integrates CUDA conditional graphs to select the head path without a host-side predicate read at each branch. |
+| Capability-based NVIDIA routing | Selects native BF16 or FP16 for the general path. The optional extension builds for the detected architecture and records why it remains inactive when prerequisites are missing. |
+| Auditable, bounded experiments | Pins model revisions, hashes inputs, saves partial results, checks repeated greedy outputs and separates request from decode timing. The CLI supervises a worker with a time limit. |
+
+## Relationship to earlier work
+
+DraftScope studies the **target output head and its fallback policy** within an existing speculative-decoding engine. DFlash addresses drafting, FlashHead addresses output-head retrieval, and SpecVocab selects a vocabulary subset for the drafter. Coarse/refine selection with dense fallback also has public prior implementations. The [sourced comparison](docs/related-work.md) explains these overlaps and the narrower prefix-conditioned mechanism implemented here.
+
+The historical comparison is against the same stock INT4 + DFlash2 engine. A controlled performance comparison against FlashHead, SpecVocab or other published systems has not been run; their reported speedups use different settings.
 
 ## What works where
 
@@ -72,10 +90,11 @@ Historical A100 results, separate from this package build:
 
 | Study | Observed result | Interpretation |
 |---|---|---|
-| Original INT4 + DFlash2 | Six case medians: **105.05–171.34 request tok/s**, **157.92–241.42 decode tok/s** | Established methods; not 500 tok/s |
-| Compiled prefix head component | **18.95% lower head latency** | Component result with earlier numerical guard; not whole-model speed |
+| Original INT4 + DFlash2 | Six case medians: **105.05–171.34 request tok/s**, **157.92–241.42 decode tok/s** | Reference configuration using established methods |
+| Prefix-conditioned fallback, captured head study | **33 → 9 fallback calls** across 78 captured calls | **72.7% fewer fallback calls** in this component study; earlier numerical guard |
+| Compiled prefix head component | **18.95% lower head latency** | Sum of per-call median wall times for 72 eight-row calls, 10 repetitions each; earlier guard; head only |
 | Whole-model V8 versus same INT4 + DFlash2 engine | **0.922% lower request latency** | Below the frozen >1% admission threshold |
-| V8 sequence checks | 60 paired timing records and 12 diagnostic pairs matched | Finite test coverage, not a proof of exactness |
+| V8 sequence checks | 30 timing pairs (60 records) and 12 diagnostic pairs matched | Finite test coverage, not a proof of exactness |
 | Held-out task quality | Final outputs not recovered after runtime disconnected | **Inconclusive**; quantization quality not accepted |
 
 The original scripts, frozen inputs and paired records are under [research](research/README.md). Hashes are checked by `python scripts/verify_evidence.py`. Negative results are retained. No GPU work was restarted after the original authorization deadline. CPU tests cannot validate CUDA graph lifetime, numerical fidelity or cross-GPU speed.
