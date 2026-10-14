@@ -1,0 +1,44 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "variant": "bf16",
+  "kwargs": {
+    "model": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "tokenizer": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "dtype": "bfloat16",
+    "tensor_parallel_size": 1,
+    "seed": 39001,
+    "max_model_len": 4096,
+    "max_num_seqs": 1,
+    "max_num_batched_tokens": 4096,
+    "gpu_memory_utilization": 0.88,
+    "language_model_only": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": false,
+    "disable_log_stats": false,
+    "trust_remote_code": false,
+    "cpu_offload_gb": 0,
+    "compilation_config": {
+      "cudagraph_capture_sizes": [
+        1
+      ],
+      "max_cudagraph_capture_size": 1
+    }
+  },
+  "fixed_output_tokens": 128,
+  "repetitions": 5,
+  "warmups_per_input": 2,
+  "batch": 1,
+  "input_sha256": "7d449fde661c97e0ba4e0ccfdfed9ed039f0e5ca304b1bb050f934cbd0497b6d",
+  "primary": "host wall seconds for pretokenized single-request generation; includes prefill and engine overhead, excludes engine startup, warmup, tokenizer and detokenization",
+  "secondary": "decode tokens/s from first/last engine token timestamps when available; 127 tokens divided by last-first",
+  "fidelity": "Every repeated greedy fixed-length sequence must match its own first sequence. Speculative variants additionally compare to frozen BF16 token sequences.",
+  "quality": "Four diagnostic prompts only; no broad quality conclusion. MTP keeps target weights unchanged.",
+  "deadline_utc": "2026-10-14T07:11:31.211985+00:00",
+  "hardware": "NVIDIA A100-SXM4-80GB",
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "vllm": "0.31.0"
+  }
+}

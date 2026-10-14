@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+# Preserve historical source bytes, including original whitespace.
+research/archive/* -whitespace

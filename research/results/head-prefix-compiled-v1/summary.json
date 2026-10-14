@@ -1,0 +1,118 @@
+{
+  "outcomes": {
+    "rows": 582,
+    "dense_vs_captured_mismatches": 0,
+    "coarse_argmax_mismatches": 4,
+    "winner_interval_violations": 0,
+    "certified_rows": 535,
+    "wrong_certificates": 0,
+    "refined_argmax_mismatches": 7,
+    "full_call_fallback": 33,
+    "pipeline_mismatches": 0,
+    "prefix_output_mismatch": 0,
+    "replay_vs_sampler_mismatch": 0,
+    "prefix_fallback": 9,
+    "topk_tie_alternative_count": 12,
+    "compiled_prefix_output_mismatch": 0,
+    "compiled_full_mismatches": 0
+  },
+  "timings": [
+    {
+      "m": 1,
+      "variant": "dense",
+      "n": 60,
+      "gpu_ms_median": 1.470367968082428,
+      "wall_ms_median": 1.508276999629743,
+      "wall_ms_mean": 1.5131039834462474,
+      "gpu_ms_mean": 1.4732922633488974
+    },
+    {
+      "m": 1,
+      "variant": "screen_refine_fallback",
+      "n": 60,
+      "gpu_ms_median": 1.2034239768981934,
+      "wall_ms_median": 1.241949499672046,
+      "wall_ms_mean": 1.2445470499490814,
+      "gpu_ms_mean": 1.2045157392819723
+    },
+    {
+      "m": 1,
+      "variant": "prefix_screen_refine_fallback",
+      "n": 60,
+      "gpu_ms_median": 1.2038879990577698,
+      "wall_ms_median": 1.2425919994711876,
+      "wall_ms_mean": 1.2437348001185455,
+      "gpu_ms_mean": 1.204561597108841
+    },
+    {
+      "m": 1,
+      "variant": "compiled_full",
+      "n": 60,
+      "gpu_ms_median": 1.4729440212249756,
+      "wall_ms_median": 1.5075965002324665,
+      "wall_ms_mean": 1.5106989000135702,
+      "gpu_ms_mean": 1.4737338602542878
+    },
+    {
+      "m": 1,
+      "variant": "compiled_prefix",
+      "n": 60,
+      "gpu_ms_median": 1.474560022354126,
+      "wall_ms_median": 1.5134869991015876,
+      "wall_ms_mean": 1.5140580331414337,
+      "gpu_ms_mean": 1.474781858921051
+    },
+    {
+      "m": 8,
+      "variant": "dense",
+      "n": 720,
+      "gpu_ms_median": 1.576911985874176,
+      "wall_ms_median": 1.6157564996319707,
+      "wall_ms_mean": 1.6186020611081,
+      "gpu_ms_mean": 1.5776316442423397
+    },
+    {
+      "m": 8,
+      "variant": "screen_refine_fallback",
+      "n": 720,
+      "gpu_ms_median": 1.3666240572929382,
+      "wall_ms_median": 1.409810000041034,
+      "wall_ms_mean": 2.0827816708333557,
+      "gpu_ms_mean": 2.041642668843269
+    },
+    {
+      "m": 8,
+      "variant": "prefix_screen_refine_fallback",
+      "n": 720,
+      "gpu_ms_median": 1.4832000136375427,
+      "wall_ms_median": 1.5258335006365087,
+      "wall_ms_mean": 1.7143561763684072,
+      "gpu_ms_mean": 1.6724256447619863
+    },
+    {
+      "m": 8,
+      "variant": "compiled_full",
+      "n": 720,
+      "gpu_ms_median": 1.1028159856796265,
+      "wall_ms_median": 1.1409720009396551,
+      "wall_ms_mean": 1.8307328458377015,
+      "gpu_ms_mean": 1.7926559555861685
+    },
+    {
+      "m": 8,
+      "variant": "compiled_prefix",
+      "n": 720,
+      "gpu_ms_median": 1.0800000429153442,
+      "wall_ms_median": 1.1178969998582033,
+      "wall_ms_mean": 1.313306556944048,
+      "gpu_ms_mean": 1.274903686841329
+    }
+  ],
+  "limitations": [
+    "Isolated head only; no end-to-end speed claim.",
+    "Existing Marlin W8A16 kernel; this screening/refinement approach has prior art.",
+    "Interval arithmetic assumptions are conservative but not a formal proof about every vendor kernel.",
+    "Original whole batch BF16 head is the fallback.",
+    "Frozen engineering activations, no held-out task results consulted."
+  ]
+}

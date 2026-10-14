@@ -1,0 +1,98 @@
+# DraftScope
+
+NVIDIA inference experiments with explicit hardware checks, bounded runs and auditable results.
+
+**Alpha research software.** DraftScope packages a Transformers baseline, a pinned vLLM INT4 + DFlash2 preset, and an optional experimental prefix-verification head. It does not claim a new speculative-decoding algorithm, universal speedups, or 500 tokens/second.
+
+## What works where
+
+| Path | Platform | Hardware policy | Validation status |
+|---|---|---|---|
+| Transformers + SDPA | Linux / Windows | NVIDIA CUDA; compatible PyTorch build and sufficient VRAM | Adapter tests on CPU; packaged GPU adapter awaits integration testing |
+| vLLM 0.31.0 | Linux | NVIDIA compute capability 7.5+; model/kernel requirements may be stricter | Historical A100 experiments; packaged adapter awaits integration testing |
+| Experimental prefix V8 | Linux | Capability >=8.0, BF16, matching toolkit, enough free VRAM; no GPU-name whitelist | Historical A100 only; portable build awaits GPU validation |
+| Planning / result analysis | Linux / Windows / macOS | CPU, no Torch dependency | Automated CPU tests |
+
+Automatic dtype is native BF16 on Ampere or newer, FP16 otherwise. AMD, Intel and Apple GPU inference are rejected. A compatible CUDA wheel/driver is still required; GPU detection alone does not prove that every model operator works. Old NVIDIA architectures removed from a PyTorch wheel are not supported by that wheel. No silent CPU offload, model substitution or quantization occurs.
+
+**Not every NVIDIA card has been tested.** The historical measurements used one A100-SXM4-80GB. A 27B model will not fit every card. Select a smaller model explicitly when necessary.
+
+## Install
+
+Python 3.11+ is required. From this repository:
+
+```sh
+python -m venv .venv
+# Activate the virtual environment for your shell.
+python -m pip install .
+draftscope plan
+```
+
+Planning and analysis do not download weights or initialize CUDA. For the general GPU path, first install a CUDA-enabled PyTorch build appropriate for your driver/GPU using the [official installer](https://pytorch.org/get-started/locally/), then:
+
+```sh
+python -m pip install '.[transformers]'
+draftscope doctor
+```
+
+For the pinned vLLM path use a **separate Linux environment**:
+
+```sh
+python -m pip install '.[vllm]'
+draftscope plan --backend vllm --int4-dflash
+```
+
+Do not combine independently pinned Torch and vLLM environments. Consult [vLLM GPU installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/gpu/) for wheel/driver constraints. Windows users can use the Transformers adapter; native Windows vLLM is rejected.
+
+## Run a bounded experiment
+
+These commands load/download weights and consume GPU time only when explicitly run:
+
+```sh
+draftscope benchmark --prompts examples/prompts.json --output runs/baseline-001 --max-seconds 600 --repeats 5
+draftscope benchmark --backend vllm --int4-dflash --prompts examples/prompts.json --output runs/dflash-001 --max-seconds 900 --memory-fraction 0.60
+draftscope analyze runs/dflash-001
+```
+
+The default target is the pinned Qwen3.8-27B checkpoint. A custom remote model requires both `--model OWNER/NAME` and `--revision FULL_COMMIT_SHA`. The remote code option is disabled. Checkpoint and dataset licenses remain their authors' licenses; no model weights are included.
+
+`--max-seconds` includes model loading, compilation and warmups. The CLI isolates the worker and terminates it on timeout; partial files survive. Kernel/driver teardown may take additional time. The Python `runner.run` API checks its time budget between calls and is **not a hard-timeout supervisor**. Prefer the CLI for bounded GPU allocation. `--memory-fraction` caps the Transformers CUDA allocator, or vLLM's configured GPU-memory utilization; external allocations and the driver are outside that cap. OOM is reported without silently moving to CPU.
+
+Each new output folder contains the frozen configuration, prompt hash, hardware metadata, incremental token IDs/timings, completion status and summary. Existing folders are never overwritten. Prompts and generated text are saved locally; inspect them before sharing results.
+
+## Timing and quality
+
+Runs are greedy, batch one, with no prefix cache. Whole-request timing includes prefill and backend overhead for pretokenized inputs. It excludes loading, warmups, tokenization and detokenization. Request throughput is `generated_tokens / request_seconds`; measured decode throughput is `(generated_tokens - 1) / (last_token_ts - first_token_ts)`. Transformers reports decode throughput as null because this adapter has no per-token timestamps.
+
+Repeated greedy outputs must agree within a run. This check is not a task-quality benchmark or a proof of agreement with another checkpoint. **`quality_accepted` remains null.** `--fixed-tokens` suppresses normal EOS stopping for timing studies; omit it for ordinary generation. The example prompts are smoke inputs, not a quality evaluation or reproduction of the six historical engineering inputs.
+
+## Preserved research evidence
+
+Historical A100 results, separate from this package build:
+
+| Study | Observed result | Interpretation |
+|---|---|---|
+| Original INT4 + DFlash2 | Six case medians: **105.05–171.34 request tok/s**, **157.92–241.42 decode tok/s** | Established methods; not 500 tok/s |
+| Compiled prefix head component | **18.95% lower head latency** | Component result with earlier numerical guard; not whole-model speed |
+| Whole-model V8 versus same INT4 + DFlash2 engine | **0.922% lower request latency** | Below the frozen >1% admission threshold |
+| V8 sequence checks | 60 paired timing records and 12 diagnostic pairs matched | Finite test coverage, not a proof of exactness |
+| Held-out task quality | Final outputs not recovered after runtime disconnected | **Inconclusive**; quantization quality not accepted |
+
+The original scripts, frozen inputs and paired records are under [research](research/README.md). Hashes are checked by `python scripts/verify_evidence.py`. Negative results are retained. No GPU work was restarted after the original authorization deadline. CPU tests cannot validate CUDA graph lifetime, numerical fidelity or cross-GPU speed.
+
+## Experimental extension
+
+See [experimental limitations](docs/experimental.md). The extension is **off by default** and requires explicit `--experimental-prefix` with `--backend vllm --int4-dflash`. Install `.[prefix]` in the vLLM environment for the CUDA bindings. It compiles for the actual GPU architecture and runs a synthetic startup check before activation. Missing capability, toolkit or memory requirements leave the stock engine active, with a recorded reason; CUDA execution errors stop the run rather than reuse a potentially damaged context. There is no A100-name restriction. It retains the full dense head and adds memory. Its historical gain did not meet the admission gate. Portability checks do not imply that all NVIDIA cards have been tested or will get the same speedup.
+
+## Development
+
+```sh
+python -m pip install -e '.[dev]'
+python -m unittest discover -s tests -v
+python -m ruff check .
+python scripts/verify_evidence.py
+python -m build
+python -m twine check dist/*
+```
+
+CI covers CPU unit/integration tests and packaging. GPU smoke testing is a separate, explicitly invoked benchmark; CI never allocates a GPU or downloads models. See [validation](docs/validation.md). Code is licensed under Apache-2.0; attribution and external dependencies are described in [NOTICE](NOTICE).

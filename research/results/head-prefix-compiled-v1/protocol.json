@@ -1,0 +1,40 @@
+{
+  "kwargs": {
+    "model": "/root/.cache/huggingface/hub/models--RedHatAI--Qwen3.8-27B-INT4/snapshots/91bd022d5b49442a868bc35008f6c21e1860edfa",
+    "tokenizer": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "dtype": "bfloat16",
+    "kv_cache_dtype": "bfloat16",
+    "tensor_parallel_size": 1,
+    "seed": 39001,
+    "max_model_len": 4096,
+    "max_num_seqs": 1,
+    "max_num_batched_tokens": 4096,
+    "gpu_memory_utilization": 0.6,
+    "language_model_only": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": false,
+    "disable_log_stats": false,
+    "trust_remote_code": false,
+    "cpu_offload_gb": 0,
+    "compilation_config": {
+      "cudagraph_capture_sizes": [
+        8
+      ],
+      "max_cudagraph_capture_size": 8
+    },
+    "spec_method": "dflash",
+    "spec_model": "/root/.cache/huggingface/hub/models--incoai--Qwen3.8-27B-DFlash2/snapshots/015e795645c74b1a0eeef3b570031fb62e769bc5",
+    "spec_tokens": 7,
+    "worker_extension_cls": "head_compiled_probe.HeadSpeedWorker"
+  },
+  "source_activations": "Frozen head-prefix-feasibility-v2 activations and exact argmax/acceptance records",
+  "change": "Compile only pointwise screening/refinement; unchanged bounds,64candidates,MarlinW8,whole-batch fallback",
+  "screen_bits": 8,
+  "refine_top": 64,
+  "shape": [
+    248320,
+    5120
+  ],
+  "timed_repetitions": 10,
+  "timed_calls": "all captured calls, no fast-case selection"
+}

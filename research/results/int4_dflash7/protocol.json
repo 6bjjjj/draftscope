@@ -1,0 +1,55 @@
+{
+  "model": "RedHatAI/Qwen3.8-27B-INT4",
+  "revision": "91bd022d5b49442a868bc35008f6c21e1860edfa",
+  "original_bf16_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "variant": "int4_dflash7",
+  "kwargs": {
+    "model": "/root/.cache/huggingface/hub/models--RedHatAI--Qwen3.8-27B-INT4/snapshots/91bd022d5b49442a868bc35008f6c21e1860edfa",
+    "tokenizer": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "dtype": "bfloat16",
+    "kv_cache_dtype": "bfloat16",
+    "tensor_parallel_size": 1,
+    "seed": 39001,
+    "max_model_len": 4096,
+    "max_num_seqs": 1,
+    "max_num_batched_tokens": 4096,
+    "gpu_memory_utilization": 0.88,
+    "language_model_only": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": false,
+    "disable_log_stats": false,
+    "trust_remote_code": false,
+    "cpu_offload_gb": 0,
+    "compilation_config": {
+      "cudagraph_capture_sizes": [
+        8
+      ],
+      "max_cudagraph_capture_size": 8
+    },
+    "spec_method": "dflash",
+    "spec_model": "/root/.cache/huggingface/hub/models--incoai--Qwen3.8-27B-DFlash2/snapshots/015e795645c74b1a0eeef3b570031fb62e769bc5",
+    "spec_tokens": 7
+  },
+  "drafter": {
+    "model": "incoai/Qwen3.8-27B-DFlash2",
+    "revision": "015e795645c74b1a0eeef3b570031fb62e769bc5"
+  },
+  "quantization": "Publisher AWQ/GPTQ W4A16 group128; explicit BF16 KV and original tokenizer; no local quality acceptance yet.",
+  "sequence_reference": "int4",
+  "fixed_output_tokens": 128,
+  "repetitions": 5,
+  "warmups_per_input": 2,
+  "batch": 1,
+  "input_sha256": "7d449fde661c97e0ba4e0ccfdfed9ed039f0e5ca304b1bb050f934cbd0497b6d",
+  "primary": "host wall seconds for pretokenized single-request generation; includes prefill and engine overhead, excludes engine startup, warmup, tokenizer and detokenization",
+  "secondary": "decode tokens/s from first/last engine token timestamps when available; 127 tokens divided by last-first",
+  "fidelity": "Every repeated greedy fixed-length sequence must match its own first sequence. Speculative variants additionally compare to frozen BF16 token sequences.",
+  "quality": "Four diagnostic prompts only; no quality acceptance. Quantized weights differ from BF16; DFlash2 retains the INT4 target; no claim of numerical sequence identity without verification.",
+  "deadline_utc": "2026-10-14T07:11:31.211985+00:00",
+  "hardware": "NVIDIA A100-SXM4-80GB",
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "transformers": "5.17.0",
+    "vllm": "0.31.0"
+  }
+}

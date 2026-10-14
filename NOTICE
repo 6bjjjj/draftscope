@@ -1,0 +1,15 @@
+DraftScope
+Copyright 2026 DraftScope contributors
+
+This repository packages assistant-authored experimental code and measurement
+infrastructure. It is not affiliated with Qwen, NVIDIA, vLLM, Red Hat, or the
+DFlash authors. No claim of novelty is made for INT4, MTP, DFlash2, Marlin,
+coarse/refine selection, or speculative decoding.
+
+The experimental worker invokes the separately installed vLLM Marlin utilities,
+PyTorch and NVIDIA CUDA runtime. Those projects retain their own licenses and
+notices. No model weights or third-party implementation source are bundled.
+Model checkpoints retain the licenses stated by their publishers.
+
+research/archive contains original assistant-authored experiment scripts.
+The package's modified worker is identified in docs/experimental.md.

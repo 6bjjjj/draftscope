@@ -1,0 +1,60 @@
+{
+  "variant": "int4_dflash7_prefix_v6",
+  "kwargs": {
+    "model": "/root/.cache/huggingface/hub/models--RedHatAI--Qwen3.8-27B-INT4/snapshots/91bd022d5b49442a868bc35008f6c21e1860edfa",
+    "tokenizer": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "dtype": "bfloat16",
+    "kv_cache_dtype": "bfloat16",
+    "tensor_parallel_size": 1,
+    "seed": 39001,
+    "max_model_len": 4096,
+    "max_num_seqs": 1,
+    "max_num_batched_tokens": 4096,
+    "gpu_memory_utilization": 0.6,
+    "language_model_only": true,
+    "enable_prefix_caching": false,
+    "enforce_eager": false,
+    "disable_log_stats": false,
+    "trust_remote_code": false,
+    "cpu_offload_gb": 0,
+    "compilation_config": {
+      "cudagraph_capture_sizes": [
+        8
+      ],
+      "max_cudagraph_capture_size": 8
+    },
+    "spec_method": "dflash",
+    "spec_model": "/root/.cache/huggingface/hub/models--incoai--Qwen3.8-27B-DFlash2/snapshots/015e795645c74b1a0eeef3b570031fb62e769bc5",
+    "spec_tokens": 7,
+    "worker_extension_cls": "prefix_extension_v6.PrefixHeadWorker"
+  },
+  "input_sha256": "7d449fde661c97e0ba4e0ccfdfed9ed039f0e5ca304b1bb050f934cbd0497b6d",
+  "runtime_extension": {
+    "install_rpc": "research_prefix_install",
+    "enable_rpc": "research_prefix_enable",
+    "file": "prefix_extension_v6.py",
+    "sha256": "0ebf28ce8651bbaf8dd70e1617605aea215651b2ca99ebdba4d63d865bca0fe8"
+  },
+  "sampling_policy": "Unchanged128min/max ignoreEOS; whitelist actual request parameters and conservatively fall back if a needed winner is a stop token.",
+  "repair": "Installed cudagraphs backend executes conditional fallback on the GPU; removes host predicate read. All frozen endpoints and numerical guards unchanged. Retain all CUDA graph external inputs and closure tensors for the lifetime of the worker; private manual CUDA graph; no global Inductor step reset. Refinement FP32 guard includes both candidate and reference accumulation via gamma(2d).",
+  "comparison": "Same engine/weights/allocated caches; alternate stock and candidate order across five paired repetitions; two warmups per mode and input.",
+  "reference": "Original BF16 head on the same INT4+DFlash2 engine",
+  "eligibility_gate": "All paired and twelve new diagnostic token sequences identical, repeated sequences stable, certified fast path actually used. Paired six-input geometric-mean latency improvement >1%; exploratory six-prompt bootstrap upper95% ratio <1.",
+  "diagnostics": [
+    "Explain the difference between a median and a mean using five numbers.",
+    "Write Python code to merge two already sorted integer lists and discuss its complexity.",
+    "A train travels 90 km in 75 minutes. Calculate its average speed with units.",
+    "Summarize the water cycle in four short sentences for a ten-year-old.",
+    "اكتب فقرة قصيرة تشرح لماذا نحتاج مجموعة اختبار مستقلة في التعلم الآلي.",
+    "عندي خمسة صناديق، بكل صندوق اثنا عشر كتاباً. تبرعت بسبعة كتب؛ كم كتاباً بقي؟",
+    "请用三句话解释为什么实验需要对照组。",
+    "Explique en français la différence entre une hypothèse et une observation.",
+    "Give a counterexample to the claim that every increasing sequence is bounded.",
+    "Create a small JSON object describing a book with title, year and two authors.",
+    "Design a simple test that would reveal an off-by-one error in binary search.",
+    "Why can two floating-point reductions of the same numbers give different answers?"
+  ],
+  "hardware": "NVIDIA A100-SXM4-80GB",
+  "deadline_utc": "2026-10-14T07:11:31.211985+00:00",
+  "scope": "Greedy batch1 verification only; no end-to-end claim before measurements. Includes host sync, checking and dense fallback. Extra head weights consume memory."
+}
